@@ -28,7 +28,7 @@ class Settings extends Component {
 
   handleKeyDown = (e) => {
     if (e.keyCode === 27) { // keyCode 27 is Escape key
-      this.props.closeSettings();
+      this.props.closeSettings && this.props.closeSettings();
     }
   }
 

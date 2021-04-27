@@ -64,11 +64,8 @@ export default class ChimeSdkWrapper {
     };
 
     const response = await fetch(
-      `${config.CHIME_ROOM_API}/join`,
-      {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      }
+      `${config.CHIME_ROOM_API}/join?` + new URLSearchParams(payload),
+      { method: 'POST' }
     );
     const json = await response.json();
     if (json.error) {
@@ -148,73 +145,73 @@ export default class ChimeSdkWrapper {
     this.publishDevicesUpdated();
     this.audioVideo.addDeviceChangeObserver(this);
 
-    this.audioVideo.realtimeSubscribeToAttendeeIdPresence(
-      (presentAttendeeId, present) => {
-        if (!present) {
-          delete this.roster[presentAttendeeId];
-          //this.publishRosterUpdate.cancel();
-          this.publishRosterUpdate()();
-          return;
-        }
-
-        this.audioVideo.realtimeSubscribeToVolumeIndicator(
-          presentAttendeeId,
-          async (
-            attendeeId,
-            volume,
-            muted,
-            signalStrength
-          ) => {
-            const baseAttendeeId = new DefaultModality(attendeeId).base();
-            if (baseAttendeeId !== attendeeId) {
-              // Don't include the content attendee in the roster.
-              //
-              // When you or other attendees share content (a screen capture, a video file,
-              // or any other MediaStream object), the content attendee (attendee-id#content) joins the session and
-              // shares content as if a regular attendee shares a video.
-              //
-              // For example, your attendee ID is "my-id". When you call meetingSession.audioVideo.startContentShare,
-              // the content attendee "my-id#content" will join the session and share your content.
-              return;
-            }
-
-            let shouldPublishImmediately = false;
-
-            if (!this.roster[attendeeId]) {
-              this.roster[attendeeId] = { name: '' };
-            }
-            if (volume !== null) {
-              this.roster[attendeeId].volume = Math.round(volume * 100);
-            }
-            if (muted !== null) {
-              this.roster[attendeeId].muted = muted;
-            }
-            if (signalStrength !== null) {
-              this.roster[attendeeId].signalStrength = Math.round(
-                signalStrength * 100
-              );
-            }
-            if (this.title && attendeeId && !this.roster[attendeeId].name) {
-              const response = await fetch(
-                `${config.CHIME_ROOM_API}/attendee?title=${encodeURIComponent(
-                  this.title
-                )}&attendeeId=${encodeURIComponent(attendeeId)}`
-              );
-              const json = await response.json();
-              if (json.AttendeeInfo && this.roster[attendeeId]) {
-                this.roster[attendeeId].name = json.AttendeeInfo.Name || '';
-                shouldPublishImmediately = true;
-              }
-            }
-
-            if (shouldPublishImmediately) {
-              //this.publishRosterUpdate.cancel();
-            }
-            this.publishRosterUpdate()();
-          }
-        );
-      }
-    );
+    // this.audioVideo.realtimeSubscribeToAttendeeIdPresence(
+    //   (presentAttendeeId, present) => {
+    //     if (!present) {
+    //       delete this.roster[presentAttendeeId];
+    //       //this.publishRosterUpdate.cancel();
+    //       this.publishRosterUpdate()();
+    //       return;
+    //     }
+    //
+    //     this.audioVideo.realtimeSubscribeToVolumeIndicator(
+    //       presentAttendeeId,
+    //       async (
+    //         attendeeId,
+    //         volume,
+    //         muted,
+    //         signalStrength
+    //       ) => {
+    //         const baseAttendeeId = new DefaultModality(attendeeId).base();
+    //         if (baseAttendeeId !== attendeeId) {
+    //           // Don't include the content attendee in the roster.
+    //           //
+    //           // When you or other attendees share content (a screen capture, a video file,
+    //           // or any other MediaStream object), the content attendee (attendee-id#content) joins the session and
+    //           // shares content as if a regular attendee shares a video.
+    //           //
+    //           // For example, your attendee ID is "my-id". When you call meetingSession.audioVideo.startContentShare,
+    //           // the content attendee "my-id#content" will join the session and share your content.
+    //           return;
+    //         }
+    //
+    //         let shouldPublishImmediately = false;
+    //
+    //         if (!this.roster[attendeeId]) {
+    //           this.roster[attendeeId] = { name: '' };
+    //         }
+    //         if (volume !== null) {
+    //           this.roster[attendeeId].volume = Math.round(volume * 100);
+    //         }
+    //         if (muted !== null) {
+    //           this.roster[attendeeId].muted = muted;
+    //         }
+    //         if (signalStrength !== null) {
+    //           this.roster[attendeeId].signalStrength = Math.round(
+    //             signalStrength * 100
+    //           );
+    //         }
+    //         if (this.title && attendeeId && !this.roster[attendeeId].name) {
+    //           const response = await fetch(
+    //             `${config.CHIME_ROOM_API}/attendee?title=${encodeURIComponent(
+    //               this.title
+    //             )}&attendeeId=${encodeURIComponent(attendeeId)}`
+    //           );
+    //           const json = await response.json();
+    //           if (json.AttendeeInfo && this.roster[attendeeId]) {
+    //             this.roster[attendeeId].name = json.AttendeeInfo.Name || '';
+    //             shouldPublishImmediately = true;
+    //           }
+    //         }
+    //
+    //         if (shouldPublishImmediately) {
+    //           //this.publishRosterUpdate.cancel();
+    //         }
+    //         this.publishRosterUpdate()();
+    //       }
+    //     );
+    //   }
+    // );
   }
 
   async joinRoom(element) {

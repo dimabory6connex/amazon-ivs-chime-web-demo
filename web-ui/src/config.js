@@ -1,7 +1,7 @@
 export const BASE_HREF = "";
 
 // API endpoint for retrieving the attendees list, joining the room, and ending the room
-export const CHIME_ROOM_API = "";
+export const CHIME_ROOM_API = "http://127.0.0.1:8080";
 
 // Chime-SDK allows up to 16 attendee videos
 export const CHIME_ROOM_MAX_ATTENDEE = 16;
