@@ -28,7 +28,7 @@ class Chat extends Component {
   }
 
   componentDidMount() {
-    this.initChatConnection();
+    // this.initChatConnection();
   }
 
   async initChatConnection() {
